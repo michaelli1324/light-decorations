@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>yes</title>
+    <title>Lights Dashboard</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="../static/styles.css"/ rel="stylesheet">
   </head>
   <body>
-    <div>
-      {% if status == true %}
-        <a href="/OFF" type="button">OFF</a>
-      {% else %}
-        <a href="/ON" type="button">ON</a>
-      {% endif %}
+    <div class="container">
+      <div class="dashboard">
+        <h2 class="header">Party Lights Dashboard</h2>
+        {% for setting in settings %}
+          <a href="/changeMode/{{ loop.index - 1 }}" type="button" class="button {{"".join(setting).lower().replace(" ", "-").replace("-/", "")}}">{{ setting }}</a>
+        {% endfor %}
+      </div>
     </div>
   </body>
 </html>

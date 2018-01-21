@@ -11,7 +11,9 @@ pipes = [[0xE8, 0xE8, 0xF0, 0xF0, 0xE1], [0xF0, 0xF0, 0xF0, 0xF0, 0xE1]]
 
 radio = NRF24(GPIO, spidev.SpiDev())
 
-lightsOn = False
+state = 0
+
+settings = ['Off', 'Rainbow Blend', 'Rainbow Stripe', 'Rainbow Stripe Blend', 'Purple / Green', 'Random', 'Black / White', 'Black / White Blend', 'Cloud', 'Party', 'Red / White / Blue', 'Red / White / Blue Blend']
 
 def setup():
     radio.begin(0, 17)
@@ -32,29 +34,19 @@ def setup():
 @app.route('/')
 def index():
     templateData = {
-        'status': lightsOn
+        'status': state,
+        'settings': settings
     }
     return render_template('dashboard.html', **templateData)
 
-@app.route('/<status>')
-def action(status):
-    global lightsOn
-    if status != 'ON' and status != 'OFF':
-        templateData = {
-            'status': lightsOn
-        }
-        return render_template('dashboard.html', **templateData)
+@app.route('/changeMode/<option>')
+def action(option):
+    global state
+    state = int(option)
 
-    message = ""
+    message = list(str(state))
 
-    if status == 'ON':
-        lightsOn = True
-        message = list("TURNON")
-    if status == 'OFF':
-        lightsOn = False
-        message = list("TURNOFF")
-
-    while len(message) < 32:
+    while len(message) < 3:
         message.append(0)
 
     radio.write(message)
@@ -62,10 +54,10 @@ def action(status):
 
 
     templateData = {
-        'status': lightsOn
+        'status': state,
+        'settings': settings
     }
     return render_template('dashboard.html', **templateData)
-
 
 if __name__ == '__main__':
     try:
